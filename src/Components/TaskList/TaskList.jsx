@@ -1,95 +1,64 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { formatDistanceToNow } from 'date-fns';
 import Task from '../Task';
-import ChangeTaskForm from '../ChangeTaskForm';
 import './TaskList.css';
 
-const TaskList = ({ taskData, filterData, onCheckBoxClick, onDeletedClick, onEditClick, onChangeDescription }) => {
-  const listElements = taskData.map((item) => {
-    const { id, minValue, secValue } = item;
+let elems = null;
+let todoArray = [];
+export default function TaskList(props) {
+  const { todoData, filter, onEdit, onDeleted, onToggleCompleted, onTaskAdded, inputTime, onPlayTimer, onPauseTimer } =
+    props;
+  function taskTemplate() {
+    elems = todoArray.map((item, index) => {
+      const { id, ...itemProps } = item;
 
-    const timeAfterCreate = formatDistanceToNow(new Date(item.dateCreate));
-    let classNames = 'active';
-    let checked = false;
-    if (item.compleeted) {
-      classNames = 'completed';
-      checked = true;
-    }
-    if (item.editing) {
-      classNames = 'editing';
-    }
-    if (filterData === 'all') {
       return (
-        <li key={id} className={classNames}>
-          <Task
-            description={item.description}
-            timeAfterCreate={timeAfterCreate}
-            checked={checked}
-            minValue={minValue}
-            secValue={secValue}
-            onCheckBoxClick={() => {
-              onCheckBoxClick(id);
-            }}
-            onDeletedClick={() => {
-              onDeletedClick(id);
-            }}
-            onEditClick={() => {
-              onEditClick(id);
-            }}
-          />
-          {item.editing ? (
-            <ChangeTaskForm id={id} description={item.description} onChangeDescription={onChangeDescription} />
-          ) : null}
-        </li>
+        <Task
+          {...itemProps}
+          key={item.id}
+          id={item.id}
+          onDeleted={() => onDeleted(id)}
+          onToggleCompleted={() => onToggleCompleted(id)}
+          onEdit={() => onEdit(id)}
+          onTaskAdded={(text, time) => onTaskAdded(text, time)}
+          inputTime={inputTime}
+          onPlayTimer={() => onPlayTimer(id)}
+          onPauseTimer={() => onPauseTimer(id)}
+          index={index}
+        />
       );
-    }
-    if (classNames === filterData || classNames === 'editing') {
-      return (
-        <li key={id} className={classNames}>
-          <Task
-            description={item.description}
-            timeAfterCreate={timeAfterCreate}
-            className={classNames}
-            checked={checked}
-            minValue={minValue}
-            secValue={secValue}
-            onCheckBoxClick={() => {
-              onCheckBoxClick(id);
-            }}
-            onDeletedClick={() => {
-              onDeletedClick(id);
-            }}
-            onEditClick={() => {
-              onEditClick(id);
-            }}
-          />
-          {item.editing ? (
-            <ChangeTaskForm id={id} description={item.description} onChangeDescription={onChangeDescription} />
-          ) : null}
-        </li>
-      );
-    }
-    return null;
-  });
-  return <ul className="todo-list">{listElements}</ul>;
-};
+    });
+  }
+
+  if (filter === 'all') {
+    todoArray = [...todoData];
+    taskTemplate();
+  }
+
+  if (filter === 'active') {
+    todoArray = todoData.filter((el) => el.active);
+    taskTemplate();
+  }
+
+  if (filter === 'completed') {
+    todoArray = todoData.filter((el) => !el.active);
+    taskTemplate();
+  }
+
+  return <ul className="todo-list">{elems}</ul>;
+}
+
 TaskList.defaultProps = {
-  filterData: 'all',
-  taskData: () => {},
-  onCheckBoxClick: () => {},
-  onDeletedClick: () => {},
-  onEditClick: () => {},
-  onChangeDescription: () => {},
+  onDeleted: () => {},
+  onToggleCompleted: () => {},
+  filter: 'all',
 };
 
 TaskList.propTypes = {
-  filterData: PropTypes.string,
-  taskData: PropTypes.instanceOf(Array),
-  onCheckBoxClick: PropTypes.func,
-  onDeletedClick: PropTypes.func,
-  onEditClick: PropTypes.func,
-  onChangeDescription: PropTypes.func,
-};
+  filter: (props, propName, componentName) => {
+    const value = props[propName];
 
-export default TaskList;
+    if (value === 'all' || value === 'active' || value === 'completed') {
+      return null;
+    }
+    return new Error(`${componentName}: Неправильное значение фильтра ${propName}: ${value}!!!`);
+  },
+};

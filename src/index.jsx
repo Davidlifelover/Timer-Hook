@@ -1,10 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+/* eslint-disable no-undef */
+import { createRoot } from 'react-dom';
+
+import './index.css';
+
 import App from './Components/App';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const domNode = document.getElementById('root');
+const root = createRoot(domNode);
+
+root.render(<App />);
+

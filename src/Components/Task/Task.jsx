@@ -1,111 +1,99 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import './Task.css';
 
-export default class Task extends Component {
-  state = {
-    // eslint-disable-next-line react/prop-types,react/destructuring-assignment
-    min: this.props.minValue,
-    // eslint-disable-next-line react/destructuring-assignment,react/prop-types
-    sec: this.props.secValue,
-    // eslint-disable-next-line react/no-unused-state
-    isCounting: false,
-  };
+import Timer from '../Timer'
 
-  static defaultProps = {
-    description: 'Имя не задано',
-    checked: false,
-    timeAfterCreate: () => {},
-    onEditClick: () => {},
-    onDeletedClick: () => {},
-    onCheckBoxClick: () => {},
-  };
+export default function Task(props) {
+  const {
+    index,
+    description,
+    created,
+    onDeleted,
+    onEdit,
+    onToggleCompleted,
+    active,
+    editing,
+    timerInSec,
+    onTaskAdded,
+    onPlayTimer,
+    onPauseTimer,
+  } = props;
 
-  static propTypes = {
-    checked: PropTypes.bool,
-    onCheckBoxClick: PropTypes.func,
-    description: PropTypes.string,
-    timeAfterCreate: PropTypes.string,
-    onEditClick: PropTypes.func,
-    onDeletedClick: PropTypes.func,
-  };
+  const [inputValue, setInputValue] = useState(description);
+  const [edited, setEdited] = useState(false);
 
-  componentWillUnmount() {
-    clearInterval(this.counterID);
+  function onInputChange(event) {
+    setInputValue(event.target.value);
   }
 
-  minDecrement = () => {
-    const { min } = this.state;
-    this.setState({
-      min: min - 1,
-      sec: 59,
-    });
-  };
+  function onSubmit(event) {
+    if (inputValue !== description) {
+      setEdited(true);
 
-  secDecrement = () => {
-    const { min, sec, isCounting } = this.state;
-    const { onCheckBoxClick } = this.props;
+      event.preventDefault();
+      onTaskAdded(inputValue, timerInSec, created);
 
-    if (min === 0 && sec === 0 && isCounting === true) {
-      onCheckBoxClick();
-      clearInterval(this.counterID);
-      this.setState({
-        isCounting: false,
-      });
+      // eslint-disable-next-line no-undef
+      const editingTask = document.querySelectorAll('.task');
+      editingTask[index].classList.add('visually-hidden');
     }
-    if (sec > 0) {
-      this.setState({
-        sec: sec - 1,
-        isCounting: true,
-      });
-    } else {
-      this.minDecrement();
+    onEdit();
+  }
+
+  const onKeyDownTask = (e) => {
+    if (e.key === 'Escape') {
+      onEdit();
+      setInputValue(description);
     }
   };
 
-  handlePause = (event) => {
-    event.stopPropagation();
-    this.setState({ isCounting: false });
-    clearInterval(this.counterID);
+  const onBluredTask = (e) => {
+    e.preventDefault();
+    onEdit();
+    setInputValue(description);
   };
 
-  handleStart = (event) => {
-    event.stopPropagation();
-    this.setState({ isCounting: true });
-    this.counterID = setInterval(() => {
-      this.secDecrement();
-    }, 1000);
-  };
+  let classStatus = active ? 'active' : 'completed';
 
-  render() {
-    const { onCheckBoxClick, description, timeAfterCreate, onEditClick, onDeletedClick, checked } = this.props;
-    const { min, sec, isCounting } = this.state;
-    const buttonTimer = !isCounting ? (
-      /* eslint-disable-next-line jsx-a11y/control-has-associated-label */
-      <button type="button" className="icon icon-play" onClick={this.handleStart} />
-    ) : (
-      /* eslint-disable-next-line jsx-a11y/control-has-associated-label */
-      <button type="button" className="icon icon-pause" onClick={this.handlePause} />
-    );
-    return (
-      <div className="view">
-        <input className="toggle" type="checkbox" readOnly onClick={onCheckBoxClick} checked={checked} />
+  classStatus = edited ? 'visually-hidden' : classStatus;
 
-        <div className="label">
-          <span role="presentation" className="title" onClick={onCheckBoxClick}>
-            {description}
-          </span>
-          <span className="description">
-            {buttonTimer}
-            <span className="description__time-value">
-              {min}:{sec}
-            </span>
-          </span>
-          <span className="created">created {timeAfterCreate} ago</span>
+  const text = edited ? inputValue : description;
+
+  const htmlSample = (
+    <div className="view">
+      <input className="toggle" type="checkbox" onClick={onToggleCompleted} defaultChecked={!active} />
+      <label>
+        <div className="timer-block">
+          <span className="title">{text}</span>
+          <Timer timerInSec={timerInSec} onPlayTimer={onPlayTimer} onPauseTimer={onPauseTimer} />
         </div>
-        <button type="button" className="icon icon-edit" onClick={onEditClick} aria-label="log out" />
-        <button type="button" className="icon icon-destroy" onClick={onDeletedClick} aria-label="log out" />
-      </div>
+        <span className="created">created {created ? formatDistanceToNow(created) : 'непонятная дата'} ago</span>
+      </label>
+      <button className="icon icon-edit" onClick={onEdit}></button>
+      <button className="icon icon-destroy" onClick={onDeleted}></button>
+    </div>
+  );
+
+  if (editing) {
+    return (
+      <li className="task editing">
+        {htmlSample}
+        <form className="new-todo-form" onSubmit={onSubmit}>
+          <input
+            type="text"
+            className="edit"
+            onChange={onInputChange}
+            value={inputValue}
+            autoFocus
+            onKeyDown={onKeyDownTask}
+            onBlur={onBluredTask}
+          />
+          <button type="submit"></button>
+        </form>
+      </li>
     );
+  } else {
+    return <li className={`task ${classStatus}`}>{htmlSample}</li>;
   }
 }

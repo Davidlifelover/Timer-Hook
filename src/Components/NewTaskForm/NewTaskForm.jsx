@@ -1,84 +1,50 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import './NewTaskForm.css';
 
-export default class NewTaskForm extends Component {
-  state = {
-    description: '',
-    placeholder: 'What needs to be done?',
-    minValue: '',
-    secValue: '',
+let placeholder = 'What needs to be done?';
+
+export default function NewTaskForm({ onTaskAdded }) {
+  const [inputValue, setInputValue] = useState('');
+  const [inputMinuteValue, setInputMinuteValue] = useState(null);
+  const [inputSecondValue, setInputSecondValue] = useState(null);
+
+  const onInputChange = (event) => {
+    setInputValue(event.target.value);
   };
 
-  static defaultProps = {
-    addNewItem: () => {},
+  const onInputChangeMinInForm = (event) => {
+    setInputMinuteValue(event.target.value);
   };
 
-  static propTypes = {
-    // eslint-disable-next-line react/no-unused-prop-types
-    addNewItem: PropTypes.func,
+  const onInputChangeSecInForm = (event) => {
+    setInputSecondValue(event.target.value);
   };
 
-  onDescriptionChange = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
-  };
+  const onSubmit = (event) => {
+    const inputTimeInSec = Number(inputMinuteValue * 60) + Number(inputSecondValue);
 
-  onSubmitForm = (event) => {
-    const { addNewItem } = this.props;
-    const { description, minValue, secValue } = this.state;
+    event.preventDefault();
+    placeholder = "What needs to be done?";
 
-    if (event.key === 'Enter') {
-      const trimDescription = description.replace(/ +/g, ' ').trim();
+    if (inputValue && inputTimeInSec > 0) {
+      onTaskAdded(inputValue, inputTimeInSec);
+      setInputValue('');
+      setInputMinuteValue(0);
+      setInputSecondValue(0);
 
-      if (trimDescription === '') {
-        addNewItem('Имя задачи не задано', minValue, secValue);
-      } else {
-        addNewItem(trimDescription, minValue, secValue);
-      }
-
-      this.setState({
-        description: '',
-        placeholder: 'What needs to be done?',
-        minValue: '',
-        secValue: '',
-      });
+      // eslint-disable-next-line no-undef
+      const form = document.querySelectorAll('.new-todo-form__timer');
+      form[0].value = null;
+      form[1].value = null;
     }
   };
 
-  render() {
-    const { description, placeholder, minValue, secValue } = this.state;
-
-    return (
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-      <form className="new-todo-form" onKeyPress={this.onSubmitForm}>
-        <input
-          className="new-todo"
-          name="description"
-          placeholder={placeholder}
-          onChange={this.onDescriptionChange}
-          value={description}
-        />
-        {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-        <input
-          className="new-todo-form__timer"
-          name="minValue"
-          placeholder="Min"
-          type='number'
-          onChange={this.onDescriptionChange}
-          value={minValue}
-        />
-        {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-        <input
-          className="new-todo-form__timer"
-          name="secValue"
-          placeholder="Sec"
-          type='number'
-          onChange={this.onDescriptionChange}
-          value={secValue}
-        />
-      </form>
-    );
-  }
+  return (
+    <form className="new-todo-form" onSubmit={onSubmit}>
+      <input className="new-todo" placeholder={placeholder} autoFocus onChange={onInputChange} value={inputValue} />
+      <input className="new-todo-form__timer" placeholder="Min" onChange={onInputChangeMinInForm} type="number" />
+      <input className="new-todo-form__timer" placeholder="Sec" onChange={onInputChangeSecInForm} type="number" />
+      <button type="submit"></button>
+    </form>
+  );
 }
