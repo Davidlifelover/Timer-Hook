@@ -1,7 +1,3 @@
-
-
-import './Timer.css';
-
 export default function Timer(props) {
   const { timerInSec, onPlayTimer, onPauseTimer } = props;
 
