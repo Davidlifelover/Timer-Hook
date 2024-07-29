@@ -54,9 +54,9 @@ export default function Task(props) {
     setInputValue(description);
   };
 
-  let classStatus = active ? 'active' : 'completed';
+  let className = active ? 'active' : 'completed';
 
-  classStatus = edited ? 'visually-hidden' : classStatus;
+  className = edited ? 'visually-hidden' : className;
 
   const text = edited ? inputValue : description;
 
@@ -68,7 +68,7 @@ export default function Task(props) {
           <span className="title">{text}</span>
           <Timer timerInSec={timerInSec} onPlayTimer={onPlayTimer} onPauseTimer={onPauseTimer} />
         </div>
-        <span className="created">created {created ? formatDistanceToNow(created) : 'непонятная дата'} ago</span>
+        <span className="created">created {created ? formatDistanceToNow(created) : 'Non data'} ago</span>
       </label>
       <button className="icon icon-edit" onClick={onEdit}></button>
       <button className="icon icon-destroy" onClick={onDeleted}></button>
@@ -94,6 +94,6 @@ export default function Task(props) {
       </li>
     );
   } else {
-    return <li className={`task ${classStatus}`}>{htmlSample}</li>;
+    return <li className={`task ${className}`}>{htmlSample}</li>;
   }
 }

@@ -3,7 +3,7 @@ export default function Timer(props) {
 
   const mins = Math.floor(timerInSec / 60);
   const secs = timerInSec - mins * 60;
-  const timerShow = timerInSec > 0 ? `${mins} : ${secs} ` : 'Время вышло!';
+  const timerShow = timerInSec > 0 ? `${mins} : ${secs} ` : `Time's up`;
 
   return (
     <span className="description">

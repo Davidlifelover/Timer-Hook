@@ -59,6 +59,6 @@ TaskList.propTypes = {
     if (value === 'all' || value === 'active' || value === 'completed') {
       return null;
     }
-    return new Error(`${componentName}: Неправильное значение фильтра ${propName}: ${value}!!!`);
+    return new Error(`${componentName}: False value ${propName}: ${value}`);
   },
 };

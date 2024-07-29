@@ -6,8 +6,8 @@ import Footer from '../Footer';
 import NewTaskForm from '../NewTaskForm';
 
 let taskId = 0;
-
 const timerId = [];
+
 export default function App() {
   function createTodoTask(description, timerInSec, created = Date.now()) {
     return {

@@ -285,6 +285,10 @@ body {
   margin-bottom: -1px;
 }
 
+.timer-block {
+  display: flex;
+}
+
 .footer {
   display: flex;
   justify-content: space-between;

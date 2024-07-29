@@ -244,6 +244,7 @@ body {
   color: gray;
   display: flex;
   margin-left: 10px;
+  align-items: center;
 }
 
 .todo-list li label .title {
@@ -253,7 +254,6 @@ body {
   transition: color 0.4s;
   font-weight: 400;
   color: #4d4d4d;
-
   margin-bottom: 10px;
   margin-right: 5px;
 }
@@ -304,14 +304,11 @@ body {
 .todo-list li .icon-play {
   margin: 0;
   font-size: 18px;
-  width: 18px;
-  height: 18px;
   margin-top: auto;
-  margin-bottom: 20px;
+  margin-bottom: auto;
 }
 
 .todo-list li .icon-play {
-  font-size: 15px;
   margin-left: 25px;
 }
 
