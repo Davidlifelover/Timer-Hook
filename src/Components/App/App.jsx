@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 import './App.css';
 import TaskList from '../TaskList';
 import Footer from '../Footer';
 import NewTaskForm from '../NewTaskForm';
 
-let taskId = 0;
-const timerId = [];
-
 export default function App() {
+  const timerId = useRef([]);
+  const taskId = useRef(0); 
+
   function createTodoTask(description, timerInSec, created = Date.now()) {
     return {
       description,
       created,
       editing: false,
       active: true,
-      id: taskId++,
+      id: taskId.current++,
       timerInSec,
       timerStarted: false,
     };
@@ -49,11 +49,11 @@ export default function App() {
     const oldItem = todoData[index];
 
     if (oldItem.timerStarted) {
-      clearInterval(timerId[index]);
+      clearInterval(timerId.current[index]);
     }
 
     const newTimerId = setInterval(() => tick(id), 1000);
-    timerId[index] = newTimerId;
+    timerId.current[index] = newTimerId;
   };
 
   const onPauseTimer = (id) => {
@@ -61,7 +61,7 @@ export default function App() {
     const oldItemTodoData = todoData[index];
 
     if (oldItemTodoData.timerStarted) {
-      clearInterval(timerId[index]);
+      clearInterval(timerId.current[index]);
 
       setTodoData((prevTodoData) => {
         const oldItem = prevTodoData[index];
