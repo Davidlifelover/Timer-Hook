@@ -1,11 +1,12 @@
 import Task from '../Task';
 import './TaskList.css';
 
-let elems = null;
-let todoArray = [];
 export default function TaskList(props) {
   const { todoData, filter, onEdit, onDeleted, onToggleCompleted, onTaskAdded, inputTime, onPlayTimer, onPauseTimer } =
     props;
+  let elems = null;
+  let todoArray = [];
+
   function taskTemplate() {
     elems = todoArray.map((item, index) => {
       const { id, ...itemProps } = item;

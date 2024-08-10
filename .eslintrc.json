@@ -4,6 +4,10 @@
     "airbnb",
     "prettier"
   ],
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "parser": "@babel/eslint-parser",
   "parserOptions": {
     "es6": true,

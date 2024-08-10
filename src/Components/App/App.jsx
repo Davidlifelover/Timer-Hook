@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 import './App.css';
 import TaskList from '../TaskList';
@@ -31,57 +31,70 @@ export default function App() {
   function tick(id) {
     setTodoData((prevTodoData) => {
       const index = prevTodoData.findIndex((el) => el.id === id);
-
+      if (index === -1) return prevTodoData;
+  
       const oldItem = prevTodoData[index];
+      if (oldItem.timerInSec <= 0) {
+        clearInterval(timerId.current[index]);
+        timerId.current[index] = null;
+        return prevTodoData; 
+      }
+  
       const newItem = {
         ...oldItem,
         timerStarted: true,
-        timerInSec: prevTodoData[index].timerInSec - 1,
+        timerInSec: oldItem.timerInSec - 1,
       };
       const newArr = [...prevTodoData.slice(0, index), newItem, ...prevTodoData.slice(index + 1)];
-
+  
       return newArr;
     });
   }
 
   const onPlayTimer = (id) => {
     const index = todoData.findIndex((el) => el.id === id);
+    if (index === -1) return; 
+  
     const oldItem = todoData[index];
-
+  
     if (oldItem.timerStarted) {
       clearInterval(timerId.current[index]);
     }
-
+  
     const newTimerId = setInterval(() => tick(id), 1000);
     timerId.current[index] = newTimerId;
   };
-
+  
   const onPauseTimer = (id) => {
     const index = todoData.findIndex((el) => el.id === id);
+    if (index === -1) return;
+  
     const oldItemTodoData = todoData[index];
-
+  
     if (oldItemTodoData.timerStarted) {
       clearInterval(timerId.current[index]);
-
+  
       setTodoData((prevTodoData) => {
         const oldItem = prevTodoData[index];
         const newItem = { ...oldItem, timerStarted: false };
         const newArr = [...prevTodoData.slice(0, index), newItem, ...prevTodoData.slice(index + 1)];
-
+  
         return newArr;
       });
     }
-  };
 
+  };
   const deleteTask = (id) => {
     onPauseTimer(id);
+  
+    setTodoData((prevTodoData) => {
 
-    const index = todoData.findIndex((el) => el.id === id);
+      const updatedTodoData = prevTodoData.filter((task) => task.id !== id);
 
-    // eslint-disable-next-line no-undef
-    const tasks = document.querySelectorAll('.task');
-
-    tasks[index].classList.add('visually-hidden');
+      timerId.current = timerId.current.filter((_, index) => index !== prevTodoData.findIndex((task) => task.id === id));
+  
+      return updatedTodoData;
+    });
   };
 
   const editTask = (id) => {
@@ -121,7 +134,6 @@ export default function App() {
 
   const onClickFilters = (event) => {
     const filterValue = event.target.innerText.toLowerCase();
-    // eslint-disable-next-line no-undef
     const filtersList = document.querySelector('.filters');
     const filterItems = filtersList.querySelectorAll('button');
 

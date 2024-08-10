@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+
 import './Task.css';
 
 import Timer from '../Timer'
@@ -34,7 +35,6 @@ export default function Task(props) {
       event.preventDefault();
       onTaskAdded(inputValue, timerInSec, created);
 
-      // eslint-disable-next-line no-undef
       const editingTask = document.querySelectorAll('.task');
       editingTask[index].classList.add('visually-hidden');
     }
@@ -48,7 +48,7 @@ export default function Task(props) {
     }
   };
 
-  const onBluredTask = (e) => {
+  const onBlurTask = (e) => {
     e.preventDefault();
     onEdit();
     setInputValue(description);
@@ -87,7 +87,7 @@ export default function Task(props) {
             value={inputValue}
             autoFocus
             onKeyDown={onKeyDownTask}
-            onBlur={onBluredTask}
+            onBlur={onBlurTask}
           />
           <button type="submit"></button>
         </form>
