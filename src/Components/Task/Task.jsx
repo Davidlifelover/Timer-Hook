@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 import './Task.css';
 
-import Timer from '../Timer'
+import Timer from '../Timer';
 
 export default function Task(props) {
   const {
@@ -31,12 +31,13 @@ export default function Task(props) {
   function onSubmit(event) {
     if (inputValue !== description) {
       setEdited(true);
-
       event.preventDefault();
       onTaskAdded(inputValue, timerInSec, created);
 
       const editingTask = document.querySelectorAll('.task');
-      editingTask[index].classList.add('visually-hidden');
+      if (editingTask[index]) {
+        editingTask[index].classList.add('visually-hidden');
+      }
     }
     onEdit();
   }
@@ -60,13 +61,20 @@ export default function Task(props) {
 
   const text = edited ? inputValue : description;
 
+  const isPlayButtonDisabled = edited;
+
   const htmlSample = (
     <div className="view">
       <input className="toggle" type="checkbox" onClick={onToggleCompleted} defaultChecked={!active} />
       <label>
         <div className="timer-block">
           <span className="title">{text}</span>
-          <Timer timerInSec={timerInSec} onPlayTimer={onPlayTimer} onPauseTimer={onPauseTimer} />
+          <Timer
+            timerInSec={timerInSec}
+            onPlayTimer={onPlayTimer}
+            onPauseTimer={onPauseTimer}
+            disabledButton={isPlayButtonDisabled}
+          />
         </div>
         <span className="created">created {created ? formatDistanceToNow(created) : 'Non data'} ago</span>
       </label>
