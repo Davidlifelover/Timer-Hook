@@ -4,11 +4,11 @@ import './TaskList.css';
 export default function TaskList(props) {
   const { todoData, filter, onEdit, onDeleted, onToggleCompleted, onTaskAdded, inputTime, onPlayTimer, onPauseTimer } =
     props;
-  let elems = null;
+  let  elem = null;
   let todoArray = [];
 
   function taskTemplate() {
-    elems = todoArray.map((item, index) => {
+    elem = todoArray.map((item, index) => {
       const { id, ...itemProps } = item;
 
       return (
@@ -44,7 +44,7 @@ export default function TaskList(props) {
     taskTemplate();
   }
 
-  return <ul className="todo-list">{elems}</ul>;
+  return <ul className="todo-list">{elem}</ul>;
 }
 
 TaskList.defaultProps = {
