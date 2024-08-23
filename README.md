@@ -1,1 +1,1 @@
-https://todo-timer-ruddy-ten.vercel.app
+https://timer-hook.vercel.app
